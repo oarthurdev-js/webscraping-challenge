@@ -1,0 +1,103 @@
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./auth-service/.env
+    depends_on:
+      - postgres
+    volumes:
+      - ./auth-service:/rails
+    command: bundle exec rails server -b 0.0.0.0
+
+  webscraping-manager:
+    build: ./webscraping-manager
+    container_name: webscraping-manager
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/webscraping_manager
+      - WEBSCRAPING_DB_URL=postgresql://postgres:postgres@postgres:5432/webscraping
+      - REDIS_URL=redis://redis:6379/1
+      - TZ=America/Sao_Paulo
+      - AUTH_SERVICE_URL=http://auth-service:3000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./webscraping-manager:/rails
+    command: bundle exec rails server -b 0.0.0.0
+
+  processing-service:
+    build: ./processing-service
+    ports:
+      - "3002:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/webscraping
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+      - RAILS_ENV=development
+      - TZ=America/Sao_Paulo
+      - PROXY_URL=${PROXY_URL}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./processing-service:/rails
+      - /rails/node_modules
+    command: bundle exec rails server -b 0.0.0.0
+
+  sidekiq:
+    build: ./processing-service
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/webscraping
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+      - REDIS_URL=redis://redis:6379/1
+      - RAILS_ENV=development
+      - TZ=America/Sao_Paulo
+      - PROXY_URL=${PROXY_URL}
+    volumes:
+      - ./processing-service:/rails
+      - /rails/node_modules
+    command: bundle exec sidekiq
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "3003:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/webscraping_notifications
+      - TZ=America/Sao_Paulo
+    depends_on:
+      - postgres
+    volumes:
+      - ./notification-service:/rails
+    command: bundle exec rails server -b 0.0.0.0
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: webscraping
+      TZ: America/Sao_Paulo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Webscraping Manager" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --danger: #ef4444;
+        --success: #22c55e;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .navbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      .navbar-menu {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+
+      .navbar-menu form {
+        margin: 0;
+        display: inline-flex;
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .navbar-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      .navbar-link:hover {
+        color: var(--primary);
+      }
+
+      .container {
+        max-width: 1024px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.15s;
+        border: none;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+      
+      .btn-danger {
+        background-color: var(--danger);
+        color: white;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 1rem;
+      }
+      
+      .alert {
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+      }
+      .alert-notice { background-color: #dcfce7; color: #166534; }
+      .alert-alert { background-color: #fee2e2; color: #991b1b; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="/" class="navbar-brand">WebScraper</a>
+      <div class="navbar-menu">
+        <% if logged_in? %>
+          <span class="navbar-link">Hello, <%= session[:user_email] %></span>
+          <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-danger" %>
+        <% else %>
+          <a href="/login" class="navbar-link">Login</a>
+          <a href="/register" class="btn btn-primary">Sign Up</a>
+        <% end %>
+      </div>
+    </nav>
+
+    <main class="container">
+      <% flash.each do |key, value| %>
+        <div class="alert alert-<%= key %>"><%= value %></div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>

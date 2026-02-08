@@ -1,0 +1,24 @@
+services:
+  rails-dev-test:
+    build: .
+    container_name: rails-dev-test
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: development
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

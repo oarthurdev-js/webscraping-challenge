@@ -1,0 +1,52 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <h1 style="margin: 0;">Dashboard</h1>
+  <%= link_to "New Task", new_task_path, class: "btn btn-primary" %>
+</div>
+
+<div class="card">
+  <% if @tasks.empty? %>
+    <p style="text-align: center; color: var(--text-muted); padding: 2rem;">
+      No scraping tasks found. Start by creating one!
+    </p>
+  <% else %>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">ID</th>
+          <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Title</th>
+          <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Status</th>
+          <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Created</th>
+          <th style="padding: 1rem; color: var(--text-muted); font-weight: 600;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem;">#<%= task.id %></td>
+            <td style="padding: 1rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <%= task.title.presence || "Untitled" %>
+            </td>
+            <td style="padding: 1rem;">
+              <span style="
+                padding: 0.25rem 0.5rem; 
+                border-radius: 9999px; 
+                font-size: 0.75rem; 
+                font-weight: 600;
+                background: <%= task.status == 'completed' ? '#dcfce7' : (task.status == 'failed' ? '#fee2e2' : '#e0e7ff') %>;
+                color: <%= task.status == 'completed' ? '#166534' : (task.status == 'failed' ? '#991b1b' : '#3730a3') %>;
+              ">
+                <%= task.status.upcase %>
+              </span>
+            </td>
+            <td style="padding: 1rem; color: var(--text-muted);">
+              <%= time_ago_in_words(task.created_at) %> ago
+            </td>
+            <td style="padding: 1rem;">
+              <%= link_to "Details", task_path(task), class: "btn", style: "background: #f1f5f9; font-size: 0.875rem;" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

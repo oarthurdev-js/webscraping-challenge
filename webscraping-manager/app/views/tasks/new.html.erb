@@ -1,0 +1,31 @@
+<div style="max-width: 600px; margin: 0 auto;">
+  <div style="margin-bottom: 1rem;">
+    <%= link_to "&larr; Back to Dashboard".html_safe, tasks_path, style: "color: var(--text-muted); text-decoration: none;" %>
+  </div>
+
+  <div class="card">
+    <h1 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem;">Create New Task</h1>
+    
+    <%= form_with model: @task do |f| %>
+      <div class="form-group">
+        <%= f.label :title, "Task Title", class: "form-label" %>
+        <%= f.text_field :title, class: "form-input", required: true, placeholder: "e.g., BMW X2 Research" %>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
+          A short description to identify this task.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :url, "Webmotors Ad URL", class: "form-label" %>
+        <%= f.url_field :url, class: "form-input", required: true, placeholder: "https://www.webmotors.com.br/..." %>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
+          Paste a valid webmotors vehicle URL to extract make, model, and price.
+        </p>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <%= f.submit "Start Scraping", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
