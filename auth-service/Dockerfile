@@ -1,21 +1,25 @@
-FROM ruby:3.2
+# Development Dockerfile
+FROM ruby:3.3-slim
 
-RUN apt-get update -qq && apt-get install -y \
+# Install dependencies
+RUN apt-get update -qq && \
+  apt-get install --no-install-recommends -y \
   build-essential \
   libpq-dev \
-  nodejs
+  libyaml-dev \
+  postgresql-client \
+  git \
+  nodejs \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /rails
 
-COPY Gemfile ./
+# Install gems
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
+# Copy application
 COPY . .
 
-COPY docker-entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/docker-entrypoint.sh
-
 EXPOSE 3000
-
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["rails", "server", "-b", "0.0.0.0"]
+CMD ["bash", "-c", "bundle install && bundle exec rails server -b 0.0.0.0"]

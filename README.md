@@ -117,7 +117,7 @@ Registro de eventos:
 
 ## Sobre Web Scraping
 
-O site Webmotors utiliza **PerimeterX** para proteção anti-bot. Para uso em produção, configure um **proxy residencial** via `PROXY_URL`.
+O site Webmotors utiliza **PerimeterX** para proteção anti-bot.
 
 ## Documentação Detalhada
 
